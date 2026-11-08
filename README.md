@@ -98,7 +98,7 @@ explicitly.
 - **There is a branch step at `x = 1/2`,** of the order of tens of orders of
   magnitude. It is an artifact of the `if x > SAFE` switch, not a property of
   `R(x)`, which is analytic across that point. The step height depends on the
-  `prec` pair used for the direct branch (`stair_diag.py` uses `30` and `40`).
+  `prec` pair used for the direct branch (see `PREC_LO` / `PREC_HI` in `stair_diag.py`).
 - **No comparison against Arb/FLINT has been performed.** This comparison is
   not done, and no claim of comparative accuracy is made.
 - **`Phi(x) = R(x) - Si(x)` has infinitely many stationary points.** They are
