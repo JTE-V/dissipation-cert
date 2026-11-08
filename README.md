@@ -136,6 +136,16 @@ versions and uploads the diagnostic outputs as build artifacts. The logs carry
 the commit hash and a timestamp, so the results are reproducible from a machine
 that is not the author's.
 
+## Use of generative AI
+
+Generative AI assistance was used during development: in drafting parts of the
+documentation and the paper, and in reviewing portions of the source code. All
+mathematical statements, derivations, and numerical values quoted in this
+repository were verified by the author against the outputs recorded in the CI
+logs, which are public and carry the commit hash of each run. The author takes
+full responsibility for the accuracy, originality, and compliance of the
+submission.
+
 ## License
 
 MIT. See `LICENSE`.
