@@ -37,31 +37,35 @@ computation runs.
 
 # Statement of need
 
-Evaluating a quotient of this kind near a pole is a routine task, and
-arbitrary-precision libraries perform it well. What they generally do not do is
-separate two questions that this package separates. A ball-arithmetic library
-attaches an error bound to every intermediate quantity and propagates it. That
-is more general than is needed for a single fixed reduction, and it couples the
-reported bound to the working precision: the user selects a precision, and the
-radius reported at the end follows from that choice. For a series truncation,
-the resulting bound is not available as a separately derivable quantity that
-can be written down and checked on its own.
+Verification is part of research, not a preliminary to it: a computed value that
+carries no account of its own error is a claim, not a result. When a quantity is
+defined by a function with a pole, the account of the error is the part that
+takes work, and it is the part that a reader has to be able to re-derive
+independently.
 
-`dissipation-cert` treats the two regimes of the same function separately, and
-for the regime where the series converges it states a bound that holds
-regardless of precision. The intended use is narrow:
+For a large class of functions, general-purpose arbitrary-precision libraries
+answer this need well. They attach a radius to every intermediate quantity and
+propagate it, which is the right tool for an arbitrary expression. But the
+radius they report is a consequence of the working precision the user selected.
+If a series truncation is what governs the error, that fact is not returned as a
+separately derivable quantity that can be written down, checked, and compared
+against a bound obtained elsewhere.
 
-- as an independent second implementation of one particular reduction, so that
-  a value obtained elsewhere can be checked against something written from
-  scratch — with the check running on a machine that is not the author's (the
-  CI workflow does this on GitHub's runners, for three Python versions);
-- as a worked example of the branch-and-bound pattern, in which the branch
-  switch, and its consequence — a step of tens of orders of magnitude — is
-  reported rather than left implicit.
+`dissipation-cert` addresses that gap for one specific reduction. It separates
+the two regimes of `R(x)` explicitly, and on the regime where the series
+converges it returns a bound that is analytic, is stated as a single named
+quantity, and does not depend on the working precision. The research purpose is
+therefore twofold:
+
+- to make one reduction available in a form whose bound can be checked without
+  re-running anything, and can be compared against an independently written
+  implementation — the CI workflow performs that comparison on a machine that is
+  not the author's, for three Python versions;
+- to serve as a worked example of a branch-and-bound evaluation in which the
+  switch between branches, and its cost, is reported rather than left implicit.
 
 The package is not a replacement for a general arbitrary-precision library, and
 no head-to-head accuracy comparison against one has been performed.
-
 # Comparison with existing software
 
 `Arb` (now part of `FLINT`), `MPFI`, `INTLAB` and the interval-arithmetic
