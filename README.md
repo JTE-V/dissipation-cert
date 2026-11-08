@@ -58,7 +58,7 @@ same directory.
 
 | Range | Branch | Evaluation | Error term | Rigorous? |
 |---|---|---|---|---|
-| `x <= 1/2` | series | `R_series(K)`, retains `H_1 .. H_(K-1)` | first dropped term `\|H_K\| * x^(2K-3)` times a tail factor `1/(1-x^2)` | yes, analytic |
+| `x <= 1/2` | series | `R_series(K)`, retains `H_1 .. H_(K-1)` | first dropped term `H_K * x^(2K-3)` times a tail factor `1/(1-x^2)` | yes, analytic |
 | `x > 1/2` | direct | evaluates `F`, `Si` directly | observed difference between two `prec` levels | no, magnitude estimate |
 
 `NK = 24`, `SAFE = 1/2`. The series bound is **independent of `prec`**; the
@@ -66,26 +66,33 @@ direct branch's estimate is not.
 
 ## Expected output
 
-Rows 1-5 and 7-8 are produced by the commands in column 2. Row 6 is an optional
-external cross-check that requires `mpmath` and is **not** a dependency of this
-package. The CI job reruns all in-repository commands on GitHub's runners and
-uploads `stair_diag.csv` and `stair_diag.svg` as artifacts.
+Rows 1-4 and 6-7 are produced by the commands in column 2 and re-run on
+GitHub's runners by CI. Row 5 is an optional external cross-check that
+requires `mpmath` and is **not** a dependency of this package.
 
 | # | Check | Command | Expected |
 |---|---|---|---|
 | 1 | power-series coefficients | `exact` | `-6`, `-3/10`, `-11/1400`, `-17/126000` |
-| 2 | series bound at `x = 1/2` (tail factor included) | `selfcheck` | `4.3e-56` |
-| 3 | first dropped term only at `x = 1/2` | `selfcheck` | `3.2e-56`  (= row 2 divided by `4/3`) |
-| 4 | direct-branch collision vs `sin` first dropped term | `selfcheck` | ratio `0.987 ~ 0.998` |
-| 5 | coefficient collision between the two implementations | `stair_diag` | all `27` coefficients equal |
-| 6 | `actual / bound` at `x = 1/2` | optional, external `mpmath` 300 dps | `0.750 ~ 0.754` |
-| 7 | branch step height at `x = 1/2` | `stair_diag` | definition-based, depends on the `prec` pair; see CI log |
-| 8 | centre-point re-check, all 8 log segments | `stair_diag` | every segment reports `OK` |
+| 2 | series bound at `x = 1/2`, tail factor included | `selfcheck` | `4.258e-56` |
+| 3 | first dropped term only, `x = 1/2` | `selfcheck` | `3.194e-56` |
+| 4 | `Si(pi)` against a 30-digit reference | `selfcheck` | computed equals reference in all 30 digits; `abs(diff) = 9.92e-31`, dominated by the reference's own truncation; the series first dropped term is `9.18e-34` |
+| 5 | `actual / bound` at `x = 1/2` | optional, external `mpmath` at 300 decimal digits | `0.750 ~ 0.754` |
+| 6 | centre-point re-check, all 8 log segments | `stair_diag` | all 8 report being below the noise floor |
+| 7 | grid maximum jump | `stair_diag` | `45.78` orders of magnitude, measured at the grid point `x = 0.538105` |
 
-Row 6 is measured against `mpmath` at 300 decimal digits and shows that the
-tail factor `1/(1-x^2)` (evaluated as `4/3` at `x = 1/2`) leaves the bound
-conservative by about 33%. Row 5 is an independent implementation of the
-coefficient recursion; it is not an assertion on the same code path.
+Row 5 shows that the tail factor `1/(1-x^2)`, evaluated as `4/3` at `x = 1/2`,
+leaves the bound conservative by about 33 percent.
+
+Note on row 7: the branch step is located at `SAFE = 1/2`. The value
+`0.538105` is the nearest sampled grid point, not the step location, and the
+reported jump also depends on the `prec` pair that `stair_diag.py` uses for its
+two-level collision.
+
+`stair_diag` additionally prints four lines flagged as a large intra-segment
+variation, for the log segments below `x = 1/2`. These are expected and are not
+defects: on the series branch the error scales as `x^45`, so over a segment
+spanning one order of magnitude the ratio is `10^45`. The flag uses a fixed
+absolute ratio threshold and therefore always triggers on the series branch.
 
 ## Known limitations
 
@@ -98,7 +105,8 @@ explicitly.
 - **There is a branch step at `x = 1/2`,** of the order of tens of orders of
   magnitude. It is an artifact of the `if x > SAFE` switch, not a property of
   `R(x)`, which is analytic across that point. The step height depends on the
-  `prec` pair used for the direct branch (see `PREC_LO` / `PREC_HI` in `stair_diag.py`).
+  `prec` pair used for the direct branch (see `PREC_LO` and `PREC_HI` in
+  `stair_diag.py`).
 - **No comparison against Arb/FLINT has been performed.** This comparison is
   not done, and no claim of comparative accuracy is made.
 - **`Phi(x) = R(x) - Si(x)` has infinitely many stationary points.** They are
@@ -106,8 +114,8 @@ explicitly.
   constant exists.
 - **`R(x) < 0` is proved strictly only for `x >= 4`** (which follows from
   `x > 2*sqrt(3)`). For `x < 4` the sign is sampled, not proved.
-- **Valid for `prec <= 30`.** With `K = 24` the series branch caps near
-  `4.3e-56` at `x = 1/2`; raising `prec` past roughly 33 makes the series
+- **`prec` is valid up to 30.** With `K = 24` the series branch caps near
+  `4.258e-56` at `x = 1/2`; raising `prec` past roughly 33 makes the series
   branch, not the direct branch, the limiting term.
 
 ## Reproducing these numbers
