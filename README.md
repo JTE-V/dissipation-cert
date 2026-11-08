@@ -5,6 +5,13 @@
 A **standard-library-only** (Python 3, `fractions`) reference implementation that
 evaluates
 
+`stair_diag.py` performs its two-level collision at `prec = 10` and `prec = 20`.
+These are deliberately lower than the `PREC = 30` used by
+`dissipation_cert.py`, so the magnitude estimates it reports for the direct
+branch are conservative by roughly 20 orders of magnitude relative to the
+shipped configuration. The series branch needs no such caveat: its bound
+`|H_K| x^(2K-3) / (1-x^2)` does not depend on `prec` at all.
+
 ```
 F(x)   = 1 / (sin x - x)
 R(x)   = F(x) + 6/x^3 + (3/10)/x
