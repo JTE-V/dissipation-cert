@@ -9,13 +9,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: List files
-        if: always()
-        run: ls -la
+
+      - name: Compile paper
+        run: |
+          mkdir -p build
+          cp paper.md paper.bib build/
+          docker run --rm \
+            --volume "$PWD/build:/data" \
+            --user $(id -u):$(id -g) \
+            --env JOURNAL=joss \
+            ghcr.io/openjournals/inara:latest
+          echo "=== produced files ==="
+          ls -la build
 
       - name: Upload
         uses: actions/upload-artifact@v6
         with:
           name: paper
-          path: '**/*.pdf'
+          path: build/*.pdf
           if-no-files-found: error
