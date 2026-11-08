@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+stair_diag.csv
+stair_diag.svg
