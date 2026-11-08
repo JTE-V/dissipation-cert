@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dissipation-cert"
+version = "1.0.0"
+description = "Dependency-free reference implementation with analytic, precision-independent branch bounds for 1/(sin x - x) and its regularisation"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "JTE-V" }]
+keywords = ["numerical-analysis", "validated-numerics", "error-bounds", "special-functions"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+
+[project.urls]
+Homepage = "https://github.com/JTE-V/dissipation-cert"
+Issues = "https://github.com/JTE-V/dissipation-cert/issues"
+
+[tool.setuptools]
+py-modules = ["dissipation_cert", "stair_diag"]
